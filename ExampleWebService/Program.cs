@@ -1,7 +1,11 @@
+using ExampleWebService.Repositories;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+builder.Services.AddSingleton<IWordRepository, InMemoryWordRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -11,6 +15,10 @@ builder.Services.AddSwaggerGen(options =>
         Title = "Word Storage API",
         Description = "Simple API to store and retrieve fantasy-themed words"
     });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.AddCors(options =>
@@ -34,28 +42,6 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-var strings = new List<string>
-{
-    "Whisperleaf",
-    "Misthorn",
-    "Glowspore"
-};
-
-app.MapGet("/api/words", () => Results.Ok(strings))
-   .WithName("GetAllWords")
-   .WithTags("Words")
-   .WithDescription("Returns the list of all stored words.");
-
-app.MapPost("/api/words", (string value) =>
-{
-    if (string.IsNullOrWhiteSpace(value))
-        return Results.BadRequest("Query parameter 'value' is required and cannot be empty");
-
-    strings.Add(value.Trim());
-    return Results.Ok($"Word '{value}' added. Total words: {strings.Count}");
-})
-.WithName("AddWord")
-.WithTags("Words")
-.WithDescription("Adds a new word from the 'value' query parameter.");
+app.MapControllers();
 
 app.Run();
