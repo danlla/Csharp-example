@@ -19,10 +19,10 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore dependencies for WebService
-        run: dotnet restore ExampleWebService/ExampleWebService.csproj -r linux-x64
+      - name: Restore WebService dependencies
+        run: dotnet restore ExampleWebService/ExampleWebService.csproj
 
-      - name: Restore dependencies for Test Project
+      - name: Restore Test Project dependencies
         run: dotnet restore ExampleTestProject/ExampleTestProject.csproj
 
       - name: Build WebService
@@ -32,7 +32,7 @@ jobs:
         run: dotnet build ExampleTestProject/ExampleTestProject.csproj -c Release --no-restore
 
       - name: Publish WebService
-        run: dotnet publish ExampleWebService/ExampleWebService.csproj -c Release -r linux-x64 --self-contained false -o publish --no-build --no-restore
+        run: dotnet publish ExampleWebService/ExampleWebService.csproj -c Release -r linux-x64 --self-contained false -o publish
 
       - name: Upload WebService artifact
         uses: actions/upload-artifact@v4
