@@ -19,8 +19,11 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Restore dependencies for WebService
+        run: dotnet restore ExampleWebService/ExampleWebService.csproj -r linux-x64
+
+      - name: Restore dependencies for Test Project
+        run: dotnet restore ExampleTestProject/ExampleTestProject.csproj
 
       - name: Build WebService
         run: dotnet build ExampleWebService/ExampleWebService.csproj -c Release --no-restore
@@ -38,4 +41,4 @@ jobs:
           path: ExampleWebService/publish/
 
       - name: Run Tests
-        run: dotnet test ExampleTestProject/ExampleTestProject.csproj --no-build --verbosity normal --no-restore
+        run: dotnet test ExampleTestProject/ExampleTestProject.csproj --no-build --verbosity normal
