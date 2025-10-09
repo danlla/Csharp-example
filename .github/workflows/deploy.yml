@@ -1,0 +1,50 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code (для логики скрипта)
+        uses: actions/checkout@v5
+
+      - name: Execute deployment script via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: course.prafdin.ru
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # Переменные
+            APP_DIR="/home/lisich/Desktop/OIS_Csharp-example"
+            LOG_FILE="/home/lisich/Desktop/deploy.log"
+            SERVICE="csharp-example"
+
+            echo "=== DEPLOYMENT STARTED ===" > $LOG_FILE
+            echo "Time: $(date)" >> $LOG_FILE
+
+            cd "$APP_DIR"
+
+            echo "📦 Pulling latest code..." | tee -a $LOG_FILE
+            git pull
+
+            cd "ExampleWebService"
+
+            echo "🔧 Building project..." | tee -a $LOG_FILE
+            dotnet build --configuration Release >> $LOG_FILE 2>&1
+
+            echo "🚀 Restarting service..." | tee -a $LOG_FILE
+            sudo /usr/bin/systemctl restart $SERVICE
+
+            echo "✅ Service status:" | tee -a $LOG_FILE
+            sudo systemctl status $SERVICE --no-pager >> $LOG_FILE
+
+            echo "🎉 DEPLOYMENT COMPLETED $(date)" | tee -a $LOG_FILE
