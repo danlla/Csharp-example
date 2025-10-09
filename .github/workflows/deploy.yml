@@ -1,29 +1,27 @@
 name: CD
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types:
-      - completed
+  release:
+    types: [published]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-      - name: Checkout code (для логики скрипта)
+      - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Execute deployment script via SSH
+      - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: course.prafdin.ru
+          host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # Переменные
+            set -e
+
             APP_DIR="/home/lisich/Desktop/OIS_Csharp-example"
             LOG_FILE="/home/lisich/Desktop/deploy.log"
             SERVICE="csharp-example"
