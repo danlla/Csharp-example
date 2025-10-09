@@ -19,26 +19,31 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      # Восстановление зависимостей
       - name: Restore WebService dependencies
         run: dotnet restore ExampleWebService/ExampleWebService.csproj
 
       - name: Restore Test Project dependencies
         run: dotnet restore ExampleTestProject/ExampleTestProject.csproj
 
+      # Сборка проектов в Release
       - name: Build WebService
         run: dotnet build ExampleWebService/ExampleWebService.csproj -c Release --no-restore
 
       - name: Build Test Project
         run: dotnet build ExampleTestProject/ExampleTestProject.csproj -c Release --no-restore
 
+      # Публикация WebService для linux-x64
       - name: Publish WebService
         run: dotnet publish ExampleWebService/ExampleWebService.csproj -c Release -r linux-x64 --self-contained false -o publish
 
+      # Загрузка артефакта для CD
       - name: Upload WebService artifact
         uses: actions/upload-artifact@v4
         with:
           name: webservice
           path: ExampleWebService/publish/
 
+      # Запуск тестов в Release
       - name: Run Tests
-        run: dotnet test ExampleTestProject/ExampleTestProject.csproj --no-build --verbosity normal
+        run: dotnet test ExampleTestProject/ExampleTestProject.csproj -c Release --no-restore --verbosity normal
