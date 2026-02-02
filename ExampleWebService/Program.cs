@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v1",
         Title = "Word Storage API",
-        Description = "Simple API to store and retrieve fantasy-themed words"
+        Description = $"Simple API to store and retrieve fantasy-themed words (Deploy Ref: {Environment.GetEnvironmentVariable("DEPLOY_REF") ?? "N/A"})"
     });
 
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
