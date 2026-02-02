@@ -59,5 +59,5 @@ dotnet ExampleWebService/bin/Release/net8.0/linux-x64/publish/ExampleWebService.
 To run the tests, execute the following command:
 
 ```bash
-dotnet test
+dotnet test --logger:junit
 ```
