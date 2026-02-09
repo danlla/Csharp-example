@@ -8,6 +8,7 @@ A simple ASP.NET Core Web API that stores a list of words in memory with:
 ## Prerequisites
 
 - .NET 8 SDK
+- Docker and Docker Compose (for containerized deployment)
 
 ## Setup
 
@@ -60,4 +61,20 @@ To run the tests, execute the following command:
 
 ```bash
 dotnet test --logger:junit
+```
+
+## Docker Compose
+
+Example of providing the PostgreSQL connection string for C# application in Docker Compose:
+
+```yaml
+environment:
+  - ConnectionStrings__Postgres=Host=db;User Id=postgres;Password=123;Database=postgres;Port=5432;Pooling=false
+```
+
+Or
+
+```yaml
+environment:
+  - "ConnectionStrings:Postgres=Host=db;User Id=postgres;Password=123;Database=postgres;Port=5432;Pooling=false"
 ```
