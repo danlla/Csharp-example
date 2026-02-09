@@ -44,11 +44,20 @@ dotnet ExampleWebService/bin/Release/net8.0/linux-x64/publish/ExampleWebService.
 - API: `http://localhost:5000/api/Words`
 - Swagger UI: `http://localhost:5000/swagger`
 
+## Swagger & API Versioning
+
+The Swagger UI will display the Git commit hash of the build if the `DEPLOY_REF` environment variable is set when the application is started. This is useful for identifying the version of the code running.
+
+Example:
+```bash
+export DEPLOY_REF=$(git rev-parse --short HEAD)
+dotnet ExampleWebService/bin/Release/net8.0/linux-x64/publish/ExampleWebService.dll --urls "http://0.0.0.0:5000"
+```
 
 ## Running Tests
 
 To run the tests, execute the following command:
 
 ```bash
-dotnet test
+dotnet test --logger:junit
 ```
